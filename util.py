@@ -19,7 +19,7 @@ class Stack:
         "Return the current size of the stack."
         return len(self.stack)
     
-    def isEmpty(self):
+    def is_empty(self):
         "Return true if the stack is empty."
         return len(self.stack) == 0
     
@@ -41,7 +41,7 @@ class Queue:
         "Return the current size of the queue."
         return len(self.queue)
     
-    def isEmpty(self):
+    def is_empty(self):
         "Return true if the queue is empty."
         return len(self.queue) == 0
     
@@ -71,7 +71,7 @@ class PriorityQueue:
         "Return the current size of the priority queue."
         return len(self.heap)
     
-    def isEmpty(self):
+    def is_empty(self):
         "Return true if the priority queue is empty."
         return len(self.heap) == 0
 
