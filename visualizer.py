@@ -10,12 +10,11 @@ WHITE = (255, 255, 255)
 BRIGHTBLUE = (0, 50, 255)
 DARKTURQUOISE = (3, 54, 73)
 GREEN = (0, 204, 0)
-YELLOW_2048 = (237, 197, 63)
-BACKGROUND_2048 = (187, 173, 160)
-# TILE_2048 = (205, 193, 180)
+YELLOW = (237, 197, 63)
+GREY = (169, 169, 169)
 
-BACKGROUND_COLOR = BACKGROUND_2048
-TILE_COLOR = YELLOW_2048
+BACKGROUND_COLOR = GREY
+TILE_COLOR = YELLOW
 TEXT_COLOR = WHITE
 BORDER_COLOR = BRIGHTBLUE
 BASIC_FONT_SIZE = 20
@@ -36,10 +35,8 @@ class Visualizer:
 
         self._tiles_per_row = len(history[0].state[0])
         self._tiles_per_col = len(history[0].state)
-        self._width = 2 * TILE_SIZE * 2 + self._tiles_per_row * TILE_SIZE + self._tiles_per_row * OFFSET_BETWEEN_TILES + BORDER_WIDTH
+        self._width = 2 * TILE_SIZE * 1 + self._tiles_per_row * TILE_SIZE + self._tiles_per_row * OFFSET_BETWEEN_TILES + BORDER_WIDTH
         self._height = 1 * TILE_SIZE * 2 + self._tiles_per_col * TILE_SIZE + self._tiles_per_col * OFFSET_BETWEEN_TILES + BORDER_WIDTH
-        print(self._width)
-        print(self._height)
         self._border_x_offset = int((self._width - (self._tiles_per_row * TILE_SIZE)) / 2)
         self._border_y_offset = int((self._height - (self._tiles_per_col * TILE_SIZE)) / 2)
 
@@ -133,7 +130,7 @@ class Visualizer:
         Draws tile value at given position in the board
         """
         tile_left, tile_top = self._get_tile_pos(pos_x, pos_y)
-        self._draw_round_rect(pygame.Rect(tile_left + offset_x, tile_top + offset_y, TILE_SIZE, TILE_SIZE), TILE_COLOR)
+        self._draw_round_rect(pygame.Rect(tile_left + offset_x, tile_top + offset_y, TILE_SIZE, TILE_SIZE), TILE_COLOR, radius=0.2)
         text_surf = self._tile_font.render(str(tile), True, TEXT_COLOR)
         text_rect_surf = text_surf.get_rect()
         text_rect_surf.center = tile_left + int(TILE_SIZE / 2) + offset_x, tile_top + int(TILE_SIZE / 2) + offset_y
