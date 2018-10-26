@@ -117,7 +117,8 @@ class Visualizer:
         # Draw each tile on the board
         for tile_x in range(len(state)):
             for tile_y in range(len(state[0])):
-                self._draw_tile(tile_x, tile_y, state[tile_x][tile_y])
+                if state[tile_x][tile_y] != 0:
+                    self._draw_tile(tile_x, tile_y, state[tile_x][tile_y])
 
         # Draw border
         left, top = self._get_tile_pos(0, 0)
@@ -126,7 +127,7 @@ class Visualizer:
         pygame.draw.rect(self._display_surf, BORDER_COLOR, (left, top, width, height), 4)
 
 if __name__ == '__main__':
-    puzzle_1 = [[1, 2, 3], [4, 6, 5], [7, 8, 0]]
+    puzzle_1 = [[1, 2, 3], [4, 0, 5], [7, 8, 6]]
     puzzle_2 = [[1, 2, 3], [4, 6, 0], [7, 8, 5]]
     puzzle_state_1 = PuzzleState(puzzle_1)
     puzzle_state_2 = PuzzleState(puzzle_2)
