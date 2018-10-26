@@ -69,7 +69,7 @@ class PuzzleState(SearchState):
                 next_states.append((self.next_state('S'), 'S', 1))
             if i != 0:
                 next_states.append((self.next_state('N'), 'N', 1))
-            if j != self.width:
+            if j != self.width - 1:
                 next_states.append((self.next_state('E'), 'E', 1))
             if i != 0:
                 next_states.append((self.next_state('W'), 'W', 1))
