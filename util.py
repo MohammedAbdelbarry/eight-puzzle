@@ -67,6 +67,15 @@ class PriorityQueue:
         (_, _, item) = heapq.heappop(self.heap)
         return item
     
+    def update(self, item, priority):
+        "Update item with a lower priority if it exists in the priority queue."
+        for index, (p, c, i) in enumerate(self.heap):
+            if i == item:
+                if p <= priority:
+                    break;
+                del self.heap[index]
+                heapq.heappush(self.heap, (priority, c, item))
+    
     def size(self):
         "Return the current size of the priority queue."
         return len(self.heap)
