@@ -133,11 +133,50 @@ class Visualizer:
         Draws tile value at given position in the board
         """
         tile_left, tile_top = self._get_tile_pos(pos_x, pos_y)
-        pygame.draw.rect(self._display_surf, TILE_COLOR, (tile_left + offset_x, tile_top + offset_y, TILE_SIZE, TILE_SIZE))
+        self._draw_round_rect(pygame.Rect(tile_left + offset_x, tile_top + offset_y, TILE_SIZE, TILE_SIZE), TILE_COLOR)
         text_surf = self._tile_font.render(str(tile), True, TEXT_COLOR)
         text_rect_surf = text_surf.get_rect()
         text_rect_surf.center = tile_left + int(TILE_SIZE / 2) + offset_x, tile_top + int(TILE_SIZE / 2) + offset_y
         self._display_surf.blit(text_surf, text_rect_surf)
+
+    def _draw_round_rect(self, rect, color,radius=0.4):
+
+        """
+        AAfilledRoundedRect(surface,rect,color,radius=0.4)
+
+        surface : destination
+        rect    : rectangle
+        color   : rgb or rgba
+        radius  : 0 <= radius <= 1
+        """
+
+        rect         = Rect(rect)
+        color        = Color(*color)
+        alpha        = color.a
+        color.a      = 0
+        pos          = rect.topleft
+        rect.topleft = 0,0
+        rectangle    = pygame.Surface(rect.size,SRCALPHA)
+
+        circle       = pygame.Surface([min(rect.size)*3]*2,SRCALPHA)
+        pygame.draw.ellipse(circle,(0,0,0),circle.get_rect(),0)
+        circle       = pygame.transform.smoothscale(circle,[int(min(rect.size)*radius)]*2)
+
+        radius              = rectangle.blit(circle,(0,0))
+        radius.bottomright  = rect.bottomright
+        rectangle.blit(circle,radius)
+        radius.topright     = rect.topright
+        rectangle.blit(circle,radius)
+        radius.bottomleft   = rect.bottomleft
+        rectangle.blit(circle,radius)
+
+        rectangle.fill((0,0,0),rect.inflate(-radius.w,0))
+        rectangle.fill((0,0,0),rect.inflate(0,-radius.h))
+
+        rectangle.fill(color,special_flags=BLEND_RGBA_MAX)
+        rectangle.fill((255,255,255,alpha),special_flags=BLEND_RGBA_MIN)
+
+        return self._display_surf.blit(rectangle,pos)
 
     def _draw_board(self, board, msg=None):
         """
