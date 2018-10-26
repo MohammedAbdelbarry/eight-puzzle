@@ -30,11 +30,11 @@ class Queue:
         self.queue = deque([])
         
     def push(self, item):
-        "Enqueue 'item' into the right end of the deque."
+        "Push 'item' into the right end of the deque."
         self.queue.append(item)
         
     def pop(self):
-        "Dequeue an item from the left end of the deque."
+        "Pop and return the first item from the left end of the deque."
         return self.queue.popleft()
     
     def size(self):
@@ -58,19 +58,21 @@ class PriorityQueue:
         self.count = 0
     
     def push(self, item, priority):
-        "Add 'item' with 'priority' into the priority queue."
+        "Push 'item' with 'priority' into the priority queue."
         heapq.heappush(self.heap, (priority, self.count, item))
         self.count += 1
         
     def pop(self):
-        "Pop 
+        "Pop and return the item with the smallest priority from the priority queue."
         (_, _, item) = heapq.heappop(self.heap)
         return item
     
     def size(self):
+        "Return the current size of the priority queue."
         return len(self.heap)
     
     def isEmpty(self):
+        "Return true if the priority queue is empty."
         return len(self.heap) == 0
 
 
