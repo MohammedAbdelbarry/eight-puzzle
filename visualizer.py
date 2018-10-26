@@ -18,13 +18,13 @@ BORDER_COLOR = BRIGHTBLUE
 BASIC_FONT_SIZE = 20
 
 # Some layout constants
-TILE_SIZE = 50 # In pixels
+TILE_SIZE = 80 # In pixels
 BORDER_WIDTH = 4
 OFFSET_BETWEEN_TILES = 1
 
 class Visualizer:
 
-    def __init__(self, history: List[SearchState], fps=10):
+    def __init__(self, history: List[SearchState], fps=45):
         self._running = True
         self._display_surf = None
         self._fps = fps
@@ -54,8 +54,8 @@ class Visualizer:
     def on_loop(self):
         pass
 
-    def on_render(self, game_state):
-        self._draw_board(game_state.state)
+    def on_render(self, game_state, msg):
+        self._draw_board(game_state.state, msg)
         pygame.display.flip()
 
     def on_cleanup(self):
@@ -63,7 +63,7 @@ class Visualizer:
 
     def _slide_animation(self, board, tile_curr_pos, tile_target_pos, animation_speed):
         # Save a copy of the original surface
-        self._draw_board(board)
+        self._draw_board(board, "Solving puzzle...")
         original_surf = self._display_surf.copy()
 
         src_grid_x, src_grid_y = tile_curr_pos[0], tile_curr_pos[1]
@@ -93,13 +93,13 @@ class Visualizer:
         if self.on_init() == False:
             self._running = False
 
-        self.on_render(self._history[0])
+        self.on_render(self._history[0], "Solving puzzle...")
         next_board_idx = 1
         while self._running:
             for event in pygame.event.get():
                 self.on_event(event)
             if next_board_idx >= len(self._history):
-                self.on_render(self._history[-1])
+                self.on_render(self._history[-1], "Puzzle Solved!")
                 # Display puzzle solved message, wait for 2-3 seconds then quit or something
                 # pygame.time.delay(3000)
                 # self._running = False
@@ -136,12 +136,18 @@ class Visualizer:
         text_rect_surf.center = tile_left + int(TILE_SIZE / 2) + offset_x, tile_top + int(TILE_SIZE / 2) + offset_y
         self._display_surf.blit(text_surf, text_rect_surf)
 
-    def _draw_board(self, board):
+    def _draw_board(self, board, msg=None):
         """
         Draws the board centered on the window surface
         """
         # Background color
         self._display_surf.fill(BACKGROUND_COLOR)
+
+        if msg:
+            text_surf = self._tile_font.render(msg, True, TEXT_COLOR)
+            text_rect_surf = text_surf.get_rect()
+            text_rect_surf.topleft = 10, 10
+            self._display_surf.blit(text_surf, text_rect_surf)
 
         # Draw each tile on the board
         for grid_x in range(len(board)):
@@ -156,12 +162,12 @@ class Visualizer:
         pygame.draw.rect(self._display_surf, BORDER_COLOR, (left, top, width, height), BORDER_WIDTH)
 
 def get_puzzle_states():
-    return [PuzzleState([[1, 2, 3], [4, 5, 0], [6, 7, 8], [9, 10, 11], [9, 10, 11], [9, 10, 11], [9, 10, 11], [9, 10, 11], [9, 10, 11], [9, 10, 11], [9, 10, 11], [9, 10, 11]]),
-            PuzzleState([[1, 2, 3], [4, 0, 5], [6, 7, 8], [9, 10, 11], [9, 10, 11], [9, 10, 11], [9, 10, 11], [9, 10, 11], [9, 10, 11], [9, 10, 11], [9, 10, 11], [9, 10, 11]]),
-            # PuzzleState([[1, 2, 3], [4, 7, 5], [6, 0, 8]]),
-            # PuzzleState([[1, 2, 3], [4, 7, 5], [6, 8, 0]]),
-            # PuzzleState([[1, 2, 3], [4, 7, 0], [6, 8, 5]]),
-            # PuzzleState([[1, 2, 0], [4, 7, 3], [6, 8, 5]]),
+    return [PuzzleState([[1, 2, 3], [4, 5, 0], [6, 7, 8]]),
+            PuzzleState([[1, 2, 3], [4, 0, 5], [6, 7, 8]]),
+            PuzzleState([[1, 2, 3], [4, 7, 5], [6, 0, 8]]),
+            PuzzleState([[1, 2, 3], [4, 7, 5], [6, 8, 0]]),
+            PuzzleState([[1, 2, 3], [4, 7, 0], [6, 8, 5]]),
+            PuzzleState([[1, 2, 0], [4, 7, 3], [6, 8, 5]]),
             ]
 
 if __name__ == '__main__':
