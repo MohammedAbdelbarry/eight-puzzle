@@ -45,6 +45,9 @@ class Queue:
         "Return true if the queue is empty."
         return len(self.queue) == 0
     
+    def __contains__(self, item):
+        return item in self.queue
+    
     
 class PriorityQueue:
     """

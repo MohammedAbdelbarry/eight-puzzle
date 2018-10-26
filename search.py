@@ -3,42 +3,6 @@ from typing import List, Callable
 from util import Stack, Queue, PriorityQueue
 
 
-def bfs(problem: SearchProblem) -> List[SearchState]:
-    """
-    Returns the path from the initial state of the problem to a goal state.
-    :param problem: a SearchProblem
-    :return: List[SearchState] representing the path
-    """
-    return bfs_dfs(problem, Queue())
-
-
-def dfs(problem: SearchProblem) -> List[SearchState]:
-    """
-    Returns the path from the initial state of the problem to a goal state.
-    :param problem: a SearchProblem
-    :return: List[SearchState] representing the path
-    """
-    return bfs_dfs(problem, Stack())
-
-
-def ucs(problem: SearchProblem) -> List[SearchState]:
-    """
-    Returns the path from the initial state of the problem to a goal state.
-    :param problem: a SearchProblem
-    :return: List[SearchState] representing the path
-    """
-    raise ucs_astar(problem, PriorityQueue(), None)
-
-
-def astar(problem: SearchProblem, heuristic: Callable[[SearchState, SearchProblem], float]) -> List[SearchState]:
-    """
-    Returns the path from the initial state of the problem to a goal state.
-    :param problem: a SearchProblem
-    :return: List[SearchState] representing the path
-    """
-    return ucs_astar(problem, PriorityQueue(), None)
-
-
 def bfs_dfs(problem, frontier):
     parent = {}
     explored = set()
@@ -99,3 +63,39 @@ def ucs_astar(problem, frontier, heuristic):
                     frontier.update(state, cost[state] + heuristic(state, problem))
                     
     return []
+
+
+def bfs(problem: SearchProblem) -> List[SearchState]:
+    """
+    Returns the path from the initial state of the problem to a goal state.
+    :param problem: a SearchProblem
+    :return: List[SearchState] representing the path
+    """
+    return bfs_dfs(problem, Queue())
+
+
+def dfs(problem: SearchProblem) -> List[SearchState]:
+    """
+    Returns the path from the initial state of the problem to a goal state.
+    :param problem: a SearchProblem
+    :return: List[SearchState] representing the path
+    """
+    return bfs_dfs(problem, Stack())
+
+
+def ucs(problem: SearchProblem) -> List[SearchState]:
+    """
+    Returns the path from the initial state of the problem to a goal state.
+    :param problem: a SearchProblem
+    :return: List[SearchState] representing the path
+    """
+    raise ucs_astar(problem, PriorityQueue(), None)
+
+
+def astar(problem: SearchProblem, heuristic: Callable[[SearchState, SearchProblem], float]) -> List[SearchState]:
+    """
+    Returns the path from the initial state of the problem to a goal state.
+    :param problem: a SearchProblem
+    :return: List[SearchState] representing the path
+    """
+    return ucs_astar(problem, PriorityQueue(), None)
