@@ -10,17 +10,20 @@ WHITE = (255, 255, 255)
 BRIGHTBLUE = (0, 50, 255)
 DARKTURQUOISE = (3, 54, 73)
 GREEN = (0, 204, 0)
+YELLOW_2048 = (237, 197, 63)
+BACKGROUND_2048 = (187, 173, 160)
+# TILE_2048 = (205, 193, 180)
 
-BACKGROUND_COLOR = DARKTURQUOISE
-TILE_COLOR = GREEN
+BACKGROUND_COLOR = BACKGROUND_2048
+TILE_COLOR = YELLOW_2048
 TEXT_COLOR = WHITE
 BORDER_COLOR = BRIGHTBLUE
 BASIC_FONT_SIZE = 20
 
 # Some layout constants
 TILE_SIZE = 80 # In pixels
-BORDER_WIDTH = 4
-OFFSET_BETWEEN_TILES = 1
+BORDER_WIDTH = 1
+OFFSET_BETWEEN_TILES = 8
 
 class Visualizer:
 
@@ -148,6 +151,11 @@ class Visualizer:
             text_rect_surf = text_surf.get_rect()
             text_rect_surf.topleft = 10, 10
             self._display_surf.blit(text_surf, text_rect_surf)
+        # Draw border
+        left, top = self._get_tile_pos(0, 0)
+        width = self._tiles_per_row * (TILE_SIZE + OFFSET_BETWEEN_TILES)
+        height = self._tiles_per_col * (TILE_SIZE + OFFSET_BETWEEN_TILES)
+        pygame.draw.rect(self._display_surf, BACKGROUND_COLOR, (left, top, width, height))
 
         # Draw each tile on the board
         for grid_x in range(len(board)):
@@ -155,11 +163,7 @@ class Visualizer:
                 if board[grid_x][grid_y] != 0:
                     self._draw_tile(grid_x, grid_y, board[grid_x][grid_y])
 
-        # Draw border
-        left, top = self._get_tile_pos(0, 0)
-        width = self._tiles_per_row * (TILE_SIZE + OFFSET_BETWEEN_TILES)
-        height = self._tiles_per_col * (TILE_SIZE + OFFSET_BETWEEN_TILES)
-        pygame.draw.rect(self._display_surf, BORDER_COLOR, (left, top, width, height), BORDER_WIDTH)
+
 
 def get_puzzle_states():
     return [PuzzleState([[1, 2, 3], [4, 5, 0], [6, 7, 8]]),
