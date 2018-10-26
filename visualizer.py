@@ -101,13 +101,14 @@ class Visualizer:
             for event in pygame.event.get():
                 self.on_event(event)
             if next_board_idx >= len(self._history):
+                self.on_render(self._history[-1])
                 # Display puzzle solved message, wait for 2-3 seconds then quit or something
                 # pygame.time.delay(3000)
                 # self._running = False
                 pass
             else:
                 moved_tile_pos, target_pos = self._get_moved_tile_pos(self._history[next_board_idx - 1], self._history[next_board_idx])
-                self._slide_animation(self._history[next_board_idx - 1].state, moved_tile_pos, target_pos, animation_speed=1)
+                self._slide_animation(self._history[next_board_idx - 1].state, moved_tile_pos, target_pos, animation_speed=10)
                 next_board_idx += 1
             self.on_loop()
         self.on_cleanup()
@@ -162,7 +163,7 @@ def get_puzzle_states():
             PuzzleState([[1, 2, 3], [4, 7, 5], [6, 0, 8]]),
             PuzzleState([[1, 2, 3], [4, 7, 5], [6, 8, 0]]),
             PuzzleState([[1, 2, 3], [4, 7, 0], [6, 8, 5]]),
-            # PuzzleState([[1, 2, 0], [4, 7, 3], [6, 8, 5]]),
+            PuzzleState([[1, 2, 0], [4, 7, 3], [6, 8, 5]]),
             ]
 
 if __name__ == '__main__':
