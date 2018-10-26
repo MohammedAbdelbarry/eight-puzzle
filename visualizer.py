@@ -10,17 +10,19 @@ WHITE = (255, 255, 255)
 BRIGHTBLUE = (0, 50, 255)
 DARKTURQUOISE = (3, 54, 73)
 GREEN = (0, 204, 0)
+YELLOW = (237, 197, 63)
+GREY = (169, 169, 169)
 
-BACKGROUND_COLOR = DARKTURQUOISE
-TILE_COLOR = GREEN
+BACKGROUND_COLOR = GREY
+TILE_COLOR = YELLOW
 TEXT_COLOR = WHITE
 BORDER_COLOR = BRIGHTBLUE
 BASIC_FONT_SIZE = 20
 
 # Some layout constants
 TILE_SIZE = 80 # In pixels
-BORDER_WIDTH = 4
-OFFSET_BETWEEN_TILES = 1
+BORDER_WIDTH = 1
+OFFSET_BETWEEN_TILES = 8
 
 class Visualizer:
 
@@ -33,10 +35,8 @@ class Visualizer:
 
         self._tiles_per_row = len(history[0].state[0])
         self._tiles_per_col = len(history[0].state)
-        self._width = 2 * TILE_SIZE * 2 + self._tiles_per_row * TILE_SIZE + self._tiles_per_row * OFFSET_BETWEEN_TILES + BORDER_WIDTH
+        self._width = 2 * TILE_SIZE * 1 + self._tiles_per_row * TILE_SIZE + self._tiles_per_row * OFFSET_BETWEEN_TILES + BORDER_WIDTH
         self._height = 1 * TILE_SIZE * 2 + self._tiles_per_col * TILE_SIZE + self._tiles_per_col * OFFSET_BETWEEN_TILES + BORDER_WIDTH
-        print(self._width)
-        print(self._height)
         self._border_x_offset = int((self._width - (self._tiles_per_row * TILE_SIZE)) / 2)
         self._border_y_offset = int((self._height - (self._tiles_per_col * TILE_SIZE)) / 2)
 
@@ -130,11 +130,50 @@ class Visualizer:
         Draws tile value at given position in the board
         """
         tile_left, tile_top = self._get_tile_pos(pos_x, pos_y)
-        pygame.draw.rect(self._display_surf, TILE_COLOR, (tile_left + offset_x, tile_top + offset_y, TILE_SIZE, TILE_SIZE))
+        self._draw_round_rect(pygame.Rect(tile_left + offset_x, tile_top + offset_y, TILE_SIZE, TILE_SIZE), TILE_COLOR, radius=0.2)
         text_surf = self._tile_font.render(str(tile), True, TEXT_COLOR)
         text_rect_surf = text_surf.get_rect()
         text_rect_surf.center = tile_left + int(TILE_SIZE / 2) + offset_x, tile_top + int(TILE_SIZE / 2) + offset_y
         self._display_surf.blit(text_surf, text_rect_surf)
+
+    def _draw_round_rect(self, rect, color,radius=0.4):
+
+        """
+        AAfilledRoundedRect(surface,rect,color,radius=0.4)
+
+        surface : destination
+        rect    : rectangle
+        color   : rgb or rgba
+        radius  : 0 <= radius <= 1
+        """
+
+        rect         = Rect(rect)
+        color        = Color(*color)
+        alpha        = color.a
+        color.a      = 0
+        pos          = rect.topleft
+        rect.topleft = 0,0
+        rectangle    = pygame.Surface(rect.size,SRCALPHA)
+
+        circle       = pygame.Surface([min(rect.size)*3]*2,SRCALPHA)
+        pygame.draw.ellipse(circle,(0,0,0),circle.get_rect(),0)
+        circle       = pygame.transform.smoothscale(circle,[int(min(rect.size)*radius)]*2)
+
+        radius              = rectangle.blit(circle,(0,0))
+        radius.bottomright  = rect.bottomright
+        rectangle.blit(circle,radius)
+        radius.topright     = rect.topright
+        rectangle.blit(circle,radius)
+        radius.bottomleft   = rect.bottomleft
+        rectangle.blit(circle,radius)
+
+        rectangle.fill((0,0,0),rect.inflate(-radius.w,0))
+        rectangle.fill((0,0,0),rect.inflate(0,-radius.h))
+
+        rectangle.fill(color,special_flags=BLEND_RGBA_MAX)
+        rectangle.fill((255,255,255,alpha),special_flags=BLEND_RGBA_MIN)
+
+        return self._display_surf.blit(rectangle,pos)
 
     def _draw_board(self, board, msg=None):
         """
@@ -148,6 +187,11 @@ class Visualizer:
             text_rect_surf = text_surf.get_rect()
             text_rect_surf.topleft = 10, 10
             self._display_surf.blit(text_surf, text_rect_surf)
+        # Draw border
+        left, top = self._get_tile_pos(0, 0)
+        width = self._tiles_per_row * (TILE_SIZE + OFFSET_BETWEEN_TILES)
+        height = self._tiles_per_col * (TILE_SIZE + OFFSET_BETWEEN_TILES)
+        pygame.draw.rect(self._display_surf, BACKGROUND_COLOR, (left, top, width, height))
 
         # Draw each tile on the board
         for grid_x in range(len(board)):
@@ -155,11 +199,7 @@ class Visualizer:
                 if board[grid_x][grid_y] != 0:
                     self._draw_tile(grid_x, grid_y, board[grid_x][grid_y])
 
-        # Draw border
-        left, top = self._get_tile_pos(0, 0)
-        width = self._tiles_per_row * (TILE_SIZE + OFFSET_BETWEEN_TILES)
-        height = self._tiles_per_col * (TILE_SIZE + OFFSET_BETWEEN_TILES)
-        pygame.draw.rect(self._display_surf, BORDER_COLOR, (left, top, width, height), BORDER_WIDTH)
+
 
 def get_puzzle_states():
     return [PuzzleState([[1, 2, 3], [4, 5, 0], [6, 7, 8]]),
