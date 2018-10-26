@@ -23,6 +23,10 @@ class Stack:
         "Return true if the stack is empty."
         return len(self.stack) == 0
     
+    def __contains__(self, item):
+        "Return true if 'item' is in the stack."
+        return item in self.stack
+    
     
 class Queue:
     "A container with a first-in-first-out (FIFO) queuing policy."
@@ -46,6 +50,7 @@ class Queue:
         return len(self.queue) == 0
     
     def __contains__(self, item):
+        "Return true if 'item' is in the queue."
         return item in self.queue
     
     
@@ -86,6 +91,10 @@ class PriorityQueue:
     def is_empty(self):
         "Return true if the priority queue is empty."
         return len(self.heap) == 0
+    
+    def __contains__(self, item):
+        "Return true if 'item' is in the priority queue."
+        return item in self.heap
 
 
 def is_sorted(l: List[int]) -> bool:

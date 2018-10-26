@@ -12,12 +12,13 @@ def bfs_dfs(problem, frontier):
     while not frontier.is_empty():
         cur = frontier.pop()
         explored.add(cur)
+        print("State to explore: \n\n" + str(cur) + '\n')
         if problem.is_goal_state(cur):
             p = cur
             path = []
             while parent[p]:
                 move = parent[p][1]
-                p = parent[p]
+                p = parent[p][0]
                 path.append(move)
             path.reverse()
             return path
@@ -41,12 +42,13 @@ def ucs_astar(problem, frontier, heuristic):
     while not frontier.is_empty():
         cur = frontier.pop()
         explored.add(cur)
+        print("State to explore: \n\n" + str(cur) + '\n')
         if problem.is_goal_state(cur):
             p = cur
             path = []
             while parent[p]:
                 move = parent[p][1]
-                p = parent[p]
+                p = parent[p][0]
                 path.append(move)
             path.reverse()
             return path
