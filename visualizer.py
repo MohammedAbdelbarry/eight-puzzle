@@ -18,54 +18,52 @@ BORDER_COLOR = BRIGHTBLUE
 BASIC_FONT_SIZE = 20
 
 # Some layout constants
-TILES_PER_ROW = TILES_PER_COL = 3
-TILE_SIZE = 120 # In pixels
+TILE_SIZE = 80 # In pixels
+BORDER_WIDTH = 4
 OFFSET_BETWEEN_TILES = 1
-WIDTH = 640
-HEIGHT = 480
-BORDER_X_OFFSET = int((WIDTH - (TILES_PER_ROW * TILE_SIZE)) / 2)
-BORDER_Y_OFFSET = int((HEIGHT - (TILES_PER_COL * TILE_SIZE)) / 2)
 
 class Visualizer:
 
-    def __init__(self, history: List[SearchState], fps=30):
+    def __init__(self, history: List[SearchState], fps=45):
         self._running = True
         self._display_surf = None
-        self.size = WIDTH, HEIGHT
         self._fps = fps
         self._history = history
         self.clock = pygame.time.Clock()
 
-    # on_init calls pygame.init() that initialize all PyGame modules.
-    # Then it create the main display - 640x400 window and try to use hardware acceleration. At the end this routine sets _running to True.
+        self._tiles_per_row = len(history[0].state[0])
+        self._tiles_per_col = len(history[0].state)
+        self._width = 2 * TILE_SIZE * 2 + self._tiles_per_row * TILE_SIZE + self._tiles_per_row * OFFSET_BETWEEN_TILES + BORDER_WIDTH
+        self._height = 1 * TILE_SIZE * 2 + self._tiles_per_col * TILE_SIZE + self._tiles_per_col * OFFSET_BETWEEN_TILES + BORDER_WIDTH
+        print(self._width)
+        print(self._height)
+        self._border_x_offset = int((self._width - (self._tiles_per_row * TILE_SIZE)) / 2)
+        self._border_y_offset = int((self._height - (self._tiles_per_col * TILE_SIZE)) / 2)
+
     def on_init(self):
         pygame.init()
         self._tile_font = pygame.font.Font('freesansbold.ttf', BASIC_FONT_SIZE)
-        self._display_surf = pygame.display.set_mode(self.size, pygame.HWSURFACE | pygame.DOUBLEBUF)
+        self._display_surf = pygame.display.set_mode((self._width, self._height), pygame.HWSURFACE | pygame.DOUBLEBUF)
         self._running = True
         pygame.display.set_caption('Slide Puzzle Visualization')
 
-    # on_event checks if Quit event happened if so sets _running to False which will break game loop.
     def on_event(self, event):
         if event.type == pygame.QUIT:
             self._running = False
 
-    # loop() compute changes in the game world like NPC's moves, player moves, AI, game score.
     def on_loop(self):
         pass
 
-    # render() just print out on the screen graphic.
-    def on_render(self, game_state):
-        self._draw_board(game_state.state)
+    def on_render(self, game_state, msg):
+        self._draw_board(game_state.state, msg)
         pygame.display.flip()
 
-    # on_cleanup call pygame.quit() that quits all PyGame modules. Anything else will be cleaned up by Python.
     def on_cleanup(self):
         pygame.quit()
 
     def _slide_animation(self, board, tile_curr_pos, tile_target_pos, animation_speed):
         # Save a copy of the original surface
-        self._draw_board(board)
+        self._draw_board(board, "Solving puzzle...")
         original_surf = self._display_surf.copy()
 
         src_grid_x, src_grid_y = tile_curr_pos[0], tile_curr_pos[1]
@@ -77,7 +75,7 @@ class Visualizer:
 
         # print(board[src_x][src_y])
         # Move a distance of TILE_SIZE with speed = animation_speed per iteration
-        for i in range(0, TILE_SIZE, animation_speed):
+        for i in range(0, TILE_SIZE + animation_speed, animation_speed):
             # Check for exit here
             self._display_surf.blit(original_surf, (0,0))
             self._draw_tile(src_grid_x, src_grid_y, board[src_grid_x][src_grid_y], (dest_grid_y - src_grid_y) * i, (dest_grid_x - src_grid_x) * i)
@@ -95,20 +93,20 @@ class Visualizer:
         if self.on_init() == False:
             self._running = False
 
-        self.on_render(self._history[0])
+        self.on_render(self._history[0], "Solving puzzle...")
         next_board_idx = 1
         while self._running:
             for event in pygame.event.get():
                 self.on_event(event)
             if next_board_idx >= len(self._history):
-                self.on_render(self._history[-1])
+                self.on_render(self._history[-1], "Puzzle Solved!")
                 # Display puzzle solved message, wait for 2-3 seconds then quit or something
                 # pygame.time.delay(3000)
                 # self._running = False
                 pass
             else:
                 moved_tile_pos, target_pos = self._get_moved_tile_pos(self._history[next_board_idx - 1], self._history[next_board_idx])
-                self._slide_animation(self._history[next_board_idx - 1].state, moved_tile_pos, target_pos, animation_speed=10)
+                self._slide_animation(self._history[next_board_idx - 1].state, moved_tile_pos, target_pos, animation_speed=int(TILE_SIZE / 12))
                 next_board_idx += 1
             self.on_loop()
         self.on_cleanup()
@@ -123,8 +121,8 @@ class Visualizer:
         """
         Given position of tile relative to board (grid position), returns the screen position of the tile (coordinates position)
         """
-        left = BORDER_X_OFFSET + grid_y * TILE_SIZE + grid_y * OFFSET_BETWEEN_TILES
-        top = BORDER_Y_OFFSET + grid_x * TILE_SIZE + grid_x * OFFSET_BETWEEN_TILES
+        left = self._border_x_offset + grid_y * TILE_SIZE + grid_y * OFFSET_BETWEEN_TILES
+        top = self._border_y_offset + grid_x * TILE_SIZE + grid_x * OFFSET_BETWEEN_TILES
         return left, top
 
     def _draw_tile(self, pos_x, pos_y, tile, offset_x=0, offset_y=0):
@@ -138,12 +136,18 @@ class Visualizer:
         text_rect_surf.center = tile_left + int(TILE_SIZE / 2) + offset_x, tile_top + int(TILE_SIZE / 2) + offset_y
         self._display_surf.blit(text_surf, text_rect_surf)
 
-    def _draw_board(self, board):
+    def _draw_board(self, board, msg=None):
         """
         Draws the board centered on the window surface
         """
         # Background color
         self._display_surf.fill(BACKGROUND_COLOR)
+
+        if msg:
+            text_surf = self._tile_font.render(msg, True, TEXT_COLOR)
+            text_rect_surf = text_surf.get_rect()
+            text_rect_surf.topleft = 10, 10
+            self._display_surf.blit(text_surf, text_rect_surf)
 
         # Draw each tile on the board
         for grid_x in range(len(board)):
@@ -153,9 +157,9 @@ class Visualizer:
 
         # Draw border
         left, top = self._get_tile_pos(0, 0)
-        width = TILES_PER_ROW * (TILE_SIZE + OFFSET_BETWEEN_TILES)
-        height = TILES_PER_COL * (TILE_SIZE + OFFSET_BETWEEN_TILES)
-        pygame.draw.rect(self._display_surf, BORDER_COLOR, (left, top, width, height), 4)
+        width = self._tiles_per_row * (TILE_SIZE + OFFSET_BETWEEN_TILES)
+        height = self._tiles_per_col * (TILE_SIZE + OFFSET_BETWEEN_TILES)
+        pygame.draw.rect(self._display_surf, BORDER_COLOR, (left, top, width, height), BORDER_WIDTH)
 
 def get_puzzle_states():
     return [PuzzleState([[1, 2, 3], [4, 5, 0], [6, 7, 8]]),
