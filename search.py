@@ -6,6 +6,7 @@ from util import Stack, Queue, PriorityQueue
 def bfs_dfs(problem, frontier):
     parent = {}
     explored = set()
+    explored_states_count = 0
     frontier.push(problem.get_initial_state())
     parent[problem.get_initial_state()] = None
     explored.add(problem.get_initial_state())
@@ -18,21 +19,23 @@ def bfs_dfs(problem, frontier):
                 path.append(p)
                 p = parent[p]
             path.reverse()
-            return path
+            return path, explored_states_count
         for next_state in problem.get_neighbors(cur):
             state = next_state[0]
             if state not in explored:
                 parent[state] = cur
                 frontier.push(state)
                 explored.add(state)
+                explored_states_count += 1
                 
-    return []
+    return [], explored_states_count
         
 
 def ucs_astar(problem, frontier, heuristic):
     parent = {}
     cost = {}
     explored = set()
+    explored_states_count = 0
     frontier.push(problem.get_initial_state(), 0 + heuristic(problem.get_initial_state()))
     parent[problem.get_initial_state()] = None
     cost[problem.get_initial_state()] = 0
@@ -40,6 +43,7 @@ def ucs_astar(problem, frontier, heuristic):
     while not frontier.is_empty():
         cur = frontier.pop()
         explored.add(cur)
+        explored_states_count += 1
         if problem.is_goal_state(cur):
             p = cur
             path = []
@@ -47,7 +51,7 @@ def ucs_astar(problem, frontier, heuristic):
                 path.append(p)
                 p = parent[p]
             path.reverse()
-            return path
+            return path, explored_states_count
         for next_state in problem.get_neighbors(cur):
             state = next_state[0]
             if state not in cost:
@@ -60,10 +64,10 @@ def ucs_astar(problem, frontier, heuristic):
                     cost[state] = cost[cur] + next_state[2]
                     frontier.update(state, cost[state] + heuristic(state))
 
-    return []
+    return [], explored_states_count
 
 
-def bfs(problem: SearchProblem) -> List[SearchState]:
+def bfs(problem: SearchProblem) -> [List[SearchState], int]:
     """
     Returns the path from the initial state of the problem to a goal state.
     :param problem: a SearchProblem
@@ -72,7 +76,7 @@ def bfs(problem: SearchProblem) -> List[SearchState]:
     return bfs_dfs(problem, Queue())
 
 
-def dfs(problem: SearchProblem) -> List[SearchState]:
+def dfs(problem: SearchProblem) -> [List[SearchState], int]:
     """
     Returns the path from the initial state of the problem to a goal state.
     :param problem: a SearchProblem
@@ -81,7 +85,7 @@ def dfs(problem: SearchProblem) -> List[SearchState]:
     return bfs_dfs(problem, Stack())
 
 
-def ucs(problem: SearchProblem) -> List[SearchState]:
+def ucs(problem: SearchProblem) -> [List[SearchState], int]:
     """
     Returns the path from the initial state of the problem to a goal state.
     :param problem: a SearchProblem
@@ -91,7 +95,7 @@ def ucs(problem: SearchProblem) -> List[SearchState]:
     return ucs_astar(problem, PriorityQueue(), zero_heuristic)
 
 
-def astar(problem: SearchProblem, heuristic: Callable[[SearchState], float]) -> List[SearchState]:
+def astar(problem: SearchProblem, heuristic: Callable[[SearchState], float]) -> [List[SearchState], int]:
     """
     Returns the path from the initial state of the problem to a goal state.
     :param problem: a SearchProblem

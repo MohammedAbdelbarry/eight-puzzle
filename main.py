@@ -5,9 +5,11 @@ from visualizer import Visualizer
 
 
 if __name__ == '__main__':
-    #puzzle = PuzzleProblem(PuzzleState([[5, 0, 8], [3, 6, 4], [2, 7, 1]]))
-    puzzle = PuzzleProblem()
+    puzzle = PuzzleProblem(PuzzleState([[3, 0, 6], [7, 8, 2], [4, 1, 5]]))
+    #puzzle = PuzzleProblem()
     print(puzzle.puzzle)
-    path = astar(puzzle, euclidean_distance_heuristic)
+    path, explored_states_count = bfs(puzzle)
+    print("Number of explored states: " + str(explored_states_count) + "\n")
+    print("Cost of the solution: " + str(len(path) - 1))
     Visualizer(path).play()
 
