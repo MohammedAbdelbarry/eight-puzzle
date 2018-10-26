@@ -25,6 +25,12 @@ class PuzzleState(SearchState):
     def __str__(self):
         return '\n'.join([' '.join([str(elem) if elem != 0 else ' ' for elem in row]) for row in self.state])
 
+    def __eq__(self, other):
+        return str(self) == str(other)
+
+    def __hash__(self):
+        return hash(str(self))
+
     def next_state(self, move: str) -> 'PuzzleState':
         """
         Returns the next state that results from applying the action to the current state
@@ -81,6 +87,9 @@ class PuzzleProblem(SearchProblem):
             p = random.shuffle(range(0, 9))
             step = 3
             self.puzzle = PuzzleState([p[i: i + step] for i in range(0, 9, step)])
+
+    def __eq__(self, other):
+        return self.puzzle == other.puzzle
 
     def get_initial_state(self):
         """
