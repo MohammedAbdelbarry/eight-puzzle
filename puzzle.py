@@ -66,13 +66,13 @@ class PuzzleState(SearchState):
         elem = row[j]
         if elem == 0:
             if i != self.height - 1:
-                next_states += (self.next_state('S'), 'S', 1)
+                next_states.append((self.next_state('S'), 'S', 1))
             if i != 0:
-                next_states += (self.next_state('N'), 'N', 1)
+                next_states.append((self.next_state('N'), 'N', 1))
             if j != self.width:
-                next_states += (self.next_state('E'), 'E', 1)
+                next_states.append((self.next_state('E'), 'E', 1))
             if i != 0:
-                next_states += (self.next_state('W'), 'W', 1)
+                next_states.append((self.next_state('W'), 'W', 1))
 
         return next_states
 
@@ -84,7 +84,8 @@ class PuzzleProblem(SearchProblem):
     def __init__(self, puzzle: PuzzleState=None):
         self.puzzle = puzzle
         if not puzzle:
-            p = random.shuffle(range(0, 9))
+            p = list(range(0, 9))
+            random.shuffle(p)
             step = 3
             self.puzzle = PuzzleState([p[i: i + step] for i in range(0, 9, step)])
 
