@@ -4,7 +4,7 @@ from visualizer import Visualizer
 
 
 if __name__ == '__main__':
-    puzzle = PuzzleProblem()
+    puzzle = PuzzleProblem(width=3, height=2)
     path = bfs(puzzle)
     Visualizer(path).play()
 
