@@ -92,7 +92,7 @@ class PuzzleProblem(SearchProblem):
     def __eq__(self, other):
         return self.puzzle == other.puzzle
 
-    def get_initial_state(self):
+    def get_initial_state(self) -> PuzzleState:
         """
         Returns the start state for the search problem.
         :return A PuzzleState instance representing the initial state
@@ -105,7 +105,7 @@ class PuzzleProblem(SearchProblem):
         :param state: PuzzleState The state to be checked
         :return bool value indicating whether or not the state is a goal state
         """
-        return util.is_sorted([elem for row in self.puzzle.state for elem in row])
+        return util.is_sorted([elem for row in state.state for elem in row])
 
     def get_neighbors(self, state: PuzzleState) -> List[Tuple['PuzzleState', str, float]]:
         """
