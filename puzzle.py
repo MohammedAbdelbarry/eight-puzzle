@@ -50,7 +50,6 @@ class PuzzleState(SearchState):
             new_col = j + 1
         else:
             raise ValueError('Invalid Move {}'.format(move))
-        assert(0 <= new_row < self.height and 0 <= new_col < self.width, 'Invalid move out of boundaries')
         new_state[i][j] = self.state[new_row][new_col]
         new_state[new_row][new_col] = self.state[i][j]
         return PuzzleState(new_state)
@@ -81,13 +80,13 @@ class PuzzleProblem(SearchProblem):
 
     puzzle: PuzzleState
 
-    def __init__(self, puzzle: PuzzleState=None):
+    def __init__(self, puzzle: PuzzleState=None, width: int=3, height: int=3):
         self.puzzle = puzzle
         if not puzzle:
-            p = list(range(0, 9))
+            p = list(range(0, width * height))
             random.shuffle(p)
-            step = 3
-            self.puzzle = PuzzleState([p[i: i + step] for i in range(0, 9, step)])
+            step = width
+            self.puzzle = PuzzleState([p[i: i + step] for i in range(0, width * height, width)])
 
     def __eq__(self, other):
         return self.puzzle == other.puzzle
