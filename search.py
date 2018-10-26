@@ -8,25 +8,23 @@ def bfs_dfs(problem, frontier):
     explored = set()
     frontier.push(problem.get_initial_state())
     parent[problem.get_initial_state()] = None
-    
+    explored.add(problem.get_initial_state())
     while not frontier.is_empty():
         cur = frontier.pop()
-        explored.add(cur)
-        print("State to explore: \n\n" + str(cur) + '\n')
         if problem.is_goal_state(cur):
             p = cur
             path = []
-            while parent[p]:
-                move = parent[p][1]
-                p = parent[p][0]
-                path.append(move)
+            while p:
+                path.append(p)
+                p = parent[p]
             path.reverse()
             return path
         for next_state in problem.get_neighbors(cur):
             state = next_state[0]
-            if state not in explored and state not in frontier:
-                parent[state] = (cur, next_state[1])
+            if state not in explored:
+                parent[state] = cur
                 frontier.push(state)
+                explored.add(state)
                 
     return []
         
