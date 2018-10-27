@@ -5,7 +5,7 @@ from visualizer import Visualizer
 
 
 if __name__ == '__main__':
-    puzzle = PuzzleProblem(PuzzleState([[3, 0, 6], [7, 8, 2], [4, 1, 5]]))
+    puzzle = PuzzleProblem(PuzzleState([[1, 0, 2], [3, 4, 5], [6, 7, 8]]))
     #puzzle = PuzzleProblem()
     print(puzzle.puzzle)
     path, explored_states_count = bfs(puzzle)

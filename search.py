@@ -12,6 +12,7 @@ def bfs_dfs(problem, frontier):
     explored.add(problem.get_initial_state())
     while not frontier.is_empty():
         cur = frontier.pop()
+        explored_states_count += 1
         if problem.is_goal_state(cur):
             p = cur
             path = []
@@ -21,12 +22,11 @@ def bfs_dfs(problem, frontier):
             path.reverse()
             return path, explored_states_count
         for next_state in problem.get_neighbors(cur):
-            state = next_state[0]
+            state = next_state[0]  
             if state not in explored:
                 parent[state] = cur
                 frontier.push(state)
                 explored.add(state)
-                explored_states_count += 1
                 
     return [], explored_states_count
         
