@@ -26,15 +26,14 @@ def bfs_dfs(problem, frontier):
             path.reverse()
             return path, explored_states_count, maximum_depth_reached
         for next_state in problem.get_neighbors(cur):
-            state = next_state[0]  
+            state = next_state[0]
             if state not in explored:
                 parent[state] = cur
                 depth[state] = depth[cur] + 1
                 frontier.push(state)
                 explored.add(state)
-                
     return [], explored_states_count, maximum_depth_reached
-        
+
 
 def ucs_astar(problem, frontier, heuristic):
     parent = {}
@@ -64,7 +63,7 @@ def ucs_astar(problem, frontier, heuristic):
             state = next_state[0]
             if state not in cost:
                 parent[state] = cur
-                depth[state] = depth[cur] + 1 
+                depth[state] = depth[cur] + 1
                 cost[state] = cost[cur] + next_state[2]
                 frontier.push(state, cost[state] + heuristic(state))
             else:
@@ -73,7 +72,6 @@ def ucs_astar(problem, frontier, heuristic):
                     depth[state] = depth[cur] + 1
                     cost[state] = cost[cur] + next_state[2]
                     frontier.update(state, cost[state] + heuristic(state))
-
     return [], explored_states_count, maximum_depth_reached
 
 
